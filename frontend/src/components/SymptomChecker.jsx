@@ -1,6 +1,5 @@
-"use client"
-
 import { useState } from "react"
+import { motion } from "framer-motion"
 import BodyMap from "./BodyMap"
 import AIChatbot from "./AIChatbot"
 
@@ -23,23 +22,28 @@ const SymptomChecker = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex space-x-4">
-        <div className="w-1/2">
-          <h3 className="text-lg font-semibold mb-2">Select Symptoms on Body Map</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
+      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+        <div className="w-full md:w-1/2">
+          <h3 className="text-lg font-semibold mb-2 text-white">Select Symptoms on Body Map</h3>
           <BodyMap onSymptomSelect={handleSymptomSelect} />
         </div>
-        <div className="w-1/2">
-          <h3 className="text-lg font-semibold mb-2">Chat with AI</h3>
+        <div className="w-full md:w-1/2">
+          <h3 className="text-lg font-semibold mb-2 text-white">Chat with AI</h3>
           <AIChatbot />
         </div>
       </div>
       <div>
-        <h3 className="text-lg font-semibold mb-2">Symptom Severity</h3>
+        <h3 className="text-lg font-semibold mb-2 text-white">Symptom Severity</h3>
         <select
           value={severity}
           onChange={handleSeverityChange}
-          className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+          className="w-full p-2 bg-gray-700 text-white border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="mild">Mild</option>
           <option value="moderate">Moderate</option>
@@ -52,7 +56,7 @@ const SymptomChecker = () => {
       >
         Analyze Symptoms
       </button>
-    </div>
+    </motion.div>
   )
 }
 

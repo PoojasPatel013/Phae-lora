@@ -1,55 +1,46 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { Link } from "react-router-dom"
-import SymptomChecker from "../components/SymptomChecker"
+import api from "../utils/api"
 import HealthSummary from "../components/HealthSummary"
 import MedicationReminders from "../components/MedicationReminders"
-import LifestyleAssessment from "../components/LifestyleAssessment"
-import Symptomap from "../components/Symptomap"
+import SymptomHeatmap from "../components/SymptomHeatmap"
+import UpcomingAppointments from "../components/UpcomingAppointments"
 
 const Dashboard = () => {
   const { user } = useSelector((state) => state.auth)
+  const [healthData, setHealthData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await api.get("/dashboard")
+        setHealthData(response.data)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error)
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold mb-6 text-indigo-600">Welcome to your Dashboard, {user?.name}</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <HealthSummary />
-        <MedicationReminders />
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold text-blue-600">Welcome, {user.name}</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <HealthSummary data={healthData.healthSummary} />
+        <MedicationReminders medications={healthData.medications} />
       </div>
-
-      <LifestyleAssessment />
-
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4 text-indigo-600">Symptom Checker</h2>
-        <SymptomChecker />
-      </div>
-
-      <Symptomap />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Link
-          to="/disease-library"
-          className="bg-gradient-to-br from-blue-100 to-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"
-        >
-          <h3 className="text-xl font-semibold mb-2 text-indigo-600">Disease Library</h3>
-          <p className="text-gray-600">Explore our comprehensive database of diseases and conditions.</p>
-        </Link>
-        <Link
-          to="/parent-child-mode"
-          className="bg-gradient-to-br from-blue-100 to-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"
-        >
-          <h3 className="text-xl font-semibold mb-2 text-indigo-600">Parent/Child Mode</h3>
-          <p className="text-gray-600">Access pediatric-focused health tracking and advice.</p>
-        </Link>
-        <Link
-          to="/notifications"
-          className="bg-gradient-to-br from-blue-100 to-indigo-100 p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300"
-        >
-          <h3 className="text-xl font-semibold mb-2 text-indigo-600">Notifications & Reminders</h3>
-          <p className="text-gray-600">Manage your health alerts and reminders.</p>
-        </Link>
-      </div>
+      <SymptomHeatmap symptoms={healthData.symptoms} />
+      <UpcomingAppointments appointments={healthData.appointments} />
     </div>
   )
 }
